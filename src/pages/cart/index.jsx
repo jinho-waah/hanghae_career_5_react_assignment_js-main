@@ -2,7 +2,10 @@ import { CartTable } from '@/pages/cart/components/CartTable';
 import { EmptyNotice } from '@/pages/cart/components/EmptyNotice';
 import { Layout, authStatusType } from '@/pages/common/components/Layout';
 import { selectCart } from '@/store/cart/cartSelectors';
-import { useAppSelector } from '@/store/hooks';
+import { useDispatch, useSelector } from 'react-redux';
+
+export const useAppDispatch = useDispatch;
+export const useAppSelector = useSelector;
 import React from 'react';
 
 export const Cart = () => {

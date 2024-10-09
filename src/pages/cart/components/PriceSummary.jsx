@@ -9,11 +9,17 @@ export const useAppSelector = useSelector;
 import { formatNumber, formatPrice } from "@/utils/formatter";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import useStore from '../../../store/useStore';
+import useAuthStore from '../../../store/auth/useAuthStore';
 
 export const PriceSummary = () => {
   const navigate = useNavigate();
   const totalCount = useAppSelector(selectTotalCount);
   const totalPrice = useAppSelector(selectTotalPrice);
+
+  // const { user } = useAuthStore();
+  // const tCount = useStore((state) => state.totalCount);
+  // console.log(tCount);
 
   const handleClickPurchase = () => {
     navigate(pageRoutes.purchase);

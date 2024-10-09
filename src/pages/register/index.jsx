@@ -9,7 +9,11 @@ import { pageRoutes } from '@/apiRoutes';
 import { EMAIL_PATTERN } from '@/constants';
 import { Layout, authStatusType } from '@/pages/common/components/Layout';
 import { registerUser } from '@/store/auth/authActions';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { useDispatch, useSelector } from 'react-redux';
+
+export const useAppDispatch = useDispatch;
+export const useAppSelector = useSelector;
+
 
 export const RegisterPage = () => {
   const navigate = useNavigate();

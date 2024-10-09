@@ -10,7 +10,11 @@ import {
   setTitle,
 } from '@/store/filter/filterActions';
 import { selectFilter } from '@/store/filter/filterSelectors';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { useDispatch, useSelector } from 'react-redux';
+
+export const useAppDispatch = useDispatch;
+export const useAppSelector = useSelector;
+
 import { debounce } from '@/utils/common';
 import React from 'react';
 import { CategoryRadioGroup } from './CategoryRadioGroup';

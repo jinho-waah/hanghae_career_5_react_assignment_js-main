@@ -16,7 +16,10 @@ import { ShippingInformationForm } from '@/pages/purchase/components/ShippingInf
 import { selectUser } from '@/store/auth/authSelectors';
 import { selectCart } from '@/store/cart/cartSelectors';
 import { resetCart } from '@/store/cart/cartSlice';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { useDispatch, useSelector } from 'react-redux';
+
+export const useAppDispatch = useDispatch;
+export const useAppSelector = useSelector;
 import {
   purchaseFailure,
   purchaseStart,

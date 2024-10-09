@@ -11,7 +11,10 @@ import { ShoppingCart } from 'lucide-react';
 import React from 'react';
 
 import { selectCart } from '@/store/cart/cartSelectors';
-import { useAppSelector } from '@/store/hooks';
+import { useDispatch, useSelector } from 'react-redux';
+
+export const useAppDispatch = useDispatch;
+export const useAppSelector = useSelector;
 import { formatPrice } from '@/utils/formatter';
 
 export const ItemList = () => {
