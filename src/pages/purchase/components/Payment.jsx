@@ -4,15 +4,11 @@ import { CreditCard } from 'lucide-react';
 import React from 'react';
 
 import { PaymentMethodTableRow } from '@/pages/purchase/components/PaymentMethodTableRow';
-import { selectTotalPrice } from '@/store/cart/cartSelectors';
-import { useDispatch, useSelector } from 'react-redux';
-
-export const useAppDispatch = useDispatch;
-export const useAppSelector = useSelector;
+import useStore from '@/store/useStore'; // zustand 스토어 사용
 import { formatPrice } from '@/utils/formatter';
 
 export const Payment = ({ paymentMethod, onPaymentMethodChange }) => {
-  const totalPrice = useAppSelector(selectTotalPrice);
+  const totalPrice = useStore((state) => state.totalPrice); // zustand 상태 가져오기
   const shippingCost = 3000;
 
   const getTotalPrice = () => {

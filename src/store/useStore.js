@@ -1,14 +1,51 @@
 import { create } from 'zustand';
-// import { registerUser } from './auth/auth';
 import { registerUserAPI } from '@/api/auth';
-import {
-  getCartFromLocalStorage,
-  resetCartAtLocalStorage,
-  setCartToLocalStorage,
-  calculateTotal,
-} from './cart/cartUtils';
 import { ALL_CATEGORY_ID } from '@/constants';
-import { loadProducts, addProduct } from './product/productsActions';
+import { fetchProducts, addProductAPI } from '@/api/product';
+
+// Helper functions
+const getCartFromLocalStorage = (userId) => {
+  const cartData = localStorage.getItem('CART_LOCAL_STORAGE_KEY');
+  if (!cartData) return [];
+
+  const cartItem = JSON.parse(cartData) || null;
+  return cartItem?.[userId] ?? [];
+};
+
+const resetCartAtLocalStorage = (userId) => {
+  const cartData = localStorage.getItem('CART_LOCAL_STORAGE_KEY');
+  const cartItem = cartData ? JSON.parse(cartData) : {};
+
+  localStorage.setItem(
+    'CART_LOCAL_STORAGE_KEY',
+    JSON.stringify({
+      ...cartItem,
+      [userId]: [],
+    })
+  );
+};
+
+const setCartToLocalStorage = (cart, userId) => {
+  const cartData = localStorage.getItem('CART_LOCAL_STORAGE_KEY');
+  const cartItem = cartData ? JSON.parse(cartData) : {};
+
+  localStorage.setItem(
+    'CART_LOCAL_STORAGE_KEY',
+    JSON.stringify({
+      ...cartItem,
+      [userId]: cart,
+    })
+  );
+};
+
+const calculateTotal = (cart) =>
+  cart.reduce(
+    (acc, item) => ({
+      totalCount: acc.totalCount + item.count,
+      totalPrice: acc.totalPrice + item.price * item.count,
+    }),
+    { totalCount: 0, totalPrice: 0 }
+  );
 
 const useStore = create((set) => ({
   // Auth state
@@ -106,32 +143,56 @@ const useStore = create((set) => ({
     }),
 
   // Filter state
-  minPrice: 0,
-  maxPrice: 0,
-  title: '',
-  categoryId: ALL_CATEGORY_ID,
+  filterState: {
+    minPrice: 0,
+    maxPrice: 0,
+    title: '',
+    categoryId: ALL_CATEGORY_ID,
+  },
 
-  setMinPrice: (minPrice) => set({ minPrice }),
-  setMaxPrice: (maxPrice) => set({ maxPrice }),
-  setTitle: (title) => set({ title }),
-  setCategoryId: (categoryId) => set({ categoryId }),
+  setMinPrice: (minPrice) =>
+    set((state) => ({
+      filterState: { ...state.filterState, minPrice },
+    })),
+  setMaxPrice: (maxPrice) =>
+    set((state) => ({
+      filterState: { ...state.filterState, maxPrice },
+    })),
+  setTitle: (title) =>
+    set((state) => ({
+      filterState: { ...state.filterState, title },
+    })),
+  setCategoryId: (categoryId) =>
+    set((state) => ({
+      filterState: { ...state.filterState, categoryId },
+    })),
   resetFilter: () =>
-    set({ minPrice: 0, maxPrice: 0, title: '', categoryId: ALL_CATEGORY_ID }),
+    set({
+      filterState: {
+        minPrice: 0,
+        maxPrice: 0,
+        title: '',
+        categoryId: ALL_CATEGORY_ID,
+      },
+    }),
 
   // Products state
-  items: [],
+  products: [],
   hasNextPage: true,
   isLoading: false,
   error: null,
   totalCount: 0,
 
-  loadProducts: async () => {
+  loadProducts: async ({ filter, pageSize, page }) => {
     set({ isLoading: true });
     try {
-      const { products, hasNextPage, totalCount, isInitial } =
-        await loadProducts();
+      const { products, hasNextPage, totalCount } = await fetchProducts(
+        filter,
+        pageSize,
+        page
+      );
       set((state) => ({
-        items: isInitial ? products : [...state.items, ...products],
+        products: page === 1 ? products : [...state.products, ...products],
         hasNextPage,
         totalCount,
         isLoading: false,
@@ -141,12 +202,13 @@ const useStore = create((set) => ({
       set({ isLoading: false, error: error.message });
     }
   },
-  addProduct: async (product) => {
+
+  addProduct: async (productData) => {
     set({ isLoading: true });
     try {
-      const newProduct = await addProduct(product);
+      const newProduct = await addProductAPI(productData);
       set((state) => ({
-        items: [newProduct, ...state.items],
+        products: [newProduct, ...state.products],
         totalCount: state.totalCount + 1,
         isLoading: false,
         error: null,

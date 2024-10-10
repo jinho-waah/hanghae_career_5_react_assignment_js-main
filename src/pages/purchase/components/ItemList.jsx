@@ -9,16 +9,11 @@ import {
 } from '@/components/ui/table';
 import { ShoppingCart } from 'lucide-react';
 import React from 'react';
-
-import { selectCart } from '@/store/cart/cartSelectors';
-import { useDispatch, useSelector } from 'react-redux';
-
-export const useAppDispatch = useDispatch;
-export const useAppSelector = useSelector;
+import useStore from '@/store/useStore'; // zustand 스토어 가져오기
 import { formatPrice } from '@/utils/formatter';
 
 export const ItemList = () => {
-  const cart = useAppSelector(selectCart);
+  const cart = useStore((state) => state.cart); // zustand의 상태 가져오기
 
   return (
     <Card className="mt-6">
@@ -38,7 +33,7 @@ export const ItemList = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {Object.values(cart).map(({ id, title, count, price }) => (
+            {cart.map(({ id, title, count, price }) => (
               <TableRow key={id}>
                 <TableCell>{title}</TableCell>
                 <TableCell>{count}개</TableCell>

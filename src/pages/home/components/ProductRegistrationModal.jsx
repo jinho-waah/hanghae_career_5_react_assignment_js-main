@@ -16,28 +16,21 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { ALL_CATEGORY_ID, categories } from '@/constants';
-import React, { useState } from 'react';
+import React from 'react';
 
 import { createNewProduct, initialProductState } from '@/helpers/product';
-import { useDispatch, useSelector } from 'react-redux';
-
-export const useAppDispatch = useDispatch;
-export const useAppSelector = useSelector;
-
 import { useForm, Controller } from 'react-hook-form';
-
-import { addProduct } from '@/store/product/productsActions';
 import { uploadImage } from '@/utils/imageUpload';
+import useStore from '@/store/useStore'; // zustand 스토어
 
 export const ProductRegistrationModal = ({ isOpen, onClose, onProductAdded }) => {
-  const dispatch = useDispatch();
+  const { addProduct } = useStore(); // zustand의 addProduct 액션 사용
 
   // React Hook Form setup
   const {
     register,
     handleSubmit,
     control,
-    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: initialProductState,
@@ -55,7 +48,7 @@ export const ProductRegistrationModal = ({ isOpen, onClose, onProductAdded }) =>
       }
 
       const newProduct = createNewProduct(data, imageUrl);
-      await dispatch(addProduct(newProduct));
+      await addProduct(newProduct); // zustand 액션 호출
       onClose();
       onProductAdded();
     } catch (error) {

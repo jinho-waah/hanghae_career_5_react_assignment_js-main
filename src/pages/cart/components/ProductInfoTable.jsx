@@ -6,18 +6,12 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { ProductInfoTableRow } from '@/pages/cart/components/ProductInfoTableRow';
-import { selectUser } from '@/store/auth/authSelectors';
-import { selectCart } from '@/store/cart/cartSelectors';
-import { useDispatch, useSelector } from 'react-redux';
-
-export const useAppDispatch = useDispatch;
-export const useAppSelector = useSelector;
 
 import React from 'react';
+import useStore from '../../../store/useStore';
 
 export const ProductInfoTable = () => {
-  const cart = useAppSelector(selectCart);
-  const user = useAppSelector(selectUser);
+  const { cart, user } = useStore();
 
   return (
     <Table>

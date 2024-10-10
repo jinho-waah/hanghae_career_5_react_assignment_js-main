@@ -2,7 +2,7 @@ import { auth, db } from '@/firebase';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 
-export const registerUserAPI = async (email, password, name) => {
+export const registerUserAPI = async ({ email, password, name }) => {
   const userCredential = await createUserWithEmailAndPassword(
     auth,
     email,

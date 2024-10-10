@@ -3,23 +3,13 @@ import { Loader2 } from 'lucide-react';
 import { Suspense } from 'react';
 
 import { ApiErrorBoundary } from '@/pages/common/components/ApiErrorBoundary';
-import {
-  setCategoryId,
-  setMaxPrice,
-  setMinPrice,
-  setTitle,
-} from '@/store/filter/filterActions';
-import { selectFilter } from '@/store/filter/filterSelectors';
-import { useDispatch, useSelector } from 'react-redux';
-
-export const useAppDispatch = useDispatch;
-export const useAppSelector = useSelector;
 
 import { debounce } from '@/utils/common';
 import React from 'react';
 import { CategoryRadioGroup } from './CategoryRadioGroup';
 import { PriceRange } from './PriceRange';
 import { SearchBar } from './SearchBar';
+import useStore from '../../../store/useStore';
 
 const ProductFilterBox = ({ children }) => (
   <Card className="my-4">
@@ -28,22 +18,25 @@ const ProductFilterBox = ({ children }) => (
 );
 
 export const ProductFilter = () => {
-  const dispatch = useAppDispatch();
-  const filterState = useAppSelector(selectFilter);
+  const { filterState, setCategoryId, setMaxPrice, setMinPrice, setTitle } =
+    useStore();
 
   const handleChangeInput = debounce((e) => {
-    dispatch(setTitle(e.target.value));
+    // dispatch(setTitle(e.target.value));
+    setTitle(e.target.value);
   }, 300);
 
   const handlePriceChange = (actionCreator) =>
     debounce((e) => {
       const value = e.target.value;
       if (value === '') {
-        dispatch(actionCreator(-1));
+        // dispatch(actionCreator(-1));
+        actionCreator(-1);
       } else {
         const numericValue = Math.max(0, parseInt(value, 10));
         if (!isNaN(numericValue)) {
-          dispatch(actionCreator(numericValue));
+          // dispatch(actionCreator(numericValue));
+          actionCreator(numericValue);
         }
       }
     }, 300);
@@ -53,7 +46,8 @@ export const ProductFilter = () => {
 
   const handleChangeCategory = (value) => {
     if (value !== undefined) {
-      dispatch(setCategoryId(value));
+      // dispatch(setCategoryId(value));
+      setCategoryId(value);
     } else {
       console.error('카테고리가 설정되지 않았습니다.');
     }

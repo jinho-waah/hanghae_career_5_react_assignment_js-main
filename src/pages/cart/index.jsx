@@ -1,15 +1,11 @@
 import { CartTable } from '@/pages/cart/components/CartTable';
 import { EmptyNotice } from '@/pages/cart/components/EmptyNotice';
 import { Layout, authStatusType } from '@/pages/common/components/Layout';
-import { selectCart } from '@/store/cart/cartSelectors';
-import { useDispatch, useSelector } from 'react-redux';
-
-export const useAppDispatch = useDispatch;
-export const useAppSelector = useSelector;
 import React from 'react';
+import useStore from '../../store/useStore';
 
 export const Cart = () => {
-  const cart = useAppSelector(selectCart);
+  const { cart } = useStore();
   const isExist = cart.length > 0;
 
   return (

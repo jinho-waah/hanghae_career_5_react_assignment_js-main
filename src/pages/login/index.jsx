@@ -11,15 +11,11 @@ import { pageRoutes } from '@/apiRoutes';
 import { EMAIL_PATTERN } from '@/constants';
 import { auth } from '@/firebase';
 import { Layout, authStatusType } from '@/pages/common/components/Layout';
-import { setIsLogin, setUser } from '@/store/auth/authSlice';
-import { useDispatch, useSelector } from 'react-redux';
-
-export const useAppDispatch = useDispatch;
-export const useAppSelector = useSelector;
+import useStore from '@/store/useStore'; // zustand 스토어 사용
 
 export const LoginPage = () => {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  const { setIsLogin, setUser } = useStore(); // zustand 액션 가져오기
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -57,16 +53,13 @@ export const LoginPage = () => {
 
         Cookies.set('accessToken', token, { expires: 7 });
 
-        dispatch(setIsLogin(true));
-        if (user) {
-          dispatch(
-            setUser({
-              uid: user.uid,
-              email: user.email ?? '',
-              displayName: user.displayName ?? '',
-            })
-          );
-        }
+        // zustand로 로그인 상태 설정
+        setIsLogin(true);
+        setUser({
+          uid: user.uid,
+          email: user.email ?? '',
+          displayName: user.displayName ?? '',
+        });
 
         navigate(pageRoutes.main);
       } catch (error) {

@@ -8,19 +8,12 @@ import { useNavigate } from 'react-router-dom';
 import { pageRoutes } from '@/apiRoutes';
 import { EMAIL_PATTERN } from '@/constants';
 import { Layout, authStatusType } from '@/pages/common/components/Layout';
-import { registerUser } from '@/store/auth/authActions';
-import { useDispatch, useSelector } from 'react-redux';
 
-export const useAppDispatch = useDispatch;
-export const useAppSelector = useSelector;
-
+import useStore from '../../store/useStore';
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const { registerStatus, registerError } = useAppSelector(
-    (state) => state.auth
-  );
+  const { registerUser, registerStatus, registerError } = useStore();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -50,7 +43,7 @@ export const RegisterPage = () => {
     e.preventDefault();
     if (validateForm()) {
       try {
-        await dispatch(registerUser({ email, password, name })).unwrap();
+        await registerUser({ email, password, name });
         console.log('가입 성공!');
         navigate(pageRoutes.login);
       } catch (error) {

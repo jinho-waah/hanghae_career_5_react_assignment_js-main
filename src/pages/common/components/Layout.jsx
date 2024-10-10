@@ -1,12 +1,8 @@
 import { pageRoutes } from '@/apiRoutes';
-import { useDispatch, useSelector } from 'react-redux';
-
-export const useAppDispatch = useDispatch;
-export const useAppSelector = useSelector;
-
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { NavigationBar } from './NavigationBar';
+import useStore from '../../../store/useStore';
 
 export const authStatusType = {
   NEED_LOGIN: 'NEED_LOGIN',
@@ -19,7 +15,7 @@ export const Layout = ({
   containerClassName = '',
   authStatus = authStatusType.COMMON,
 }) => {
-  const { isLogin } = useAppSelector((state) => state.auth);
+  const { isLogin } = useStore();
 
   if (authStatus === authStatusType.NEED_LOGIN && !isLogin) {
     return <Navigate to={pageRoutes.login} />;
