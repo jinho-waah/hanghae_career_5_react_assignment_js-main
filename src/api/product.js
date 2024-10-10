@@ -54,14 +54,14 @@ export const fetchProducts = async (filter, pageSize, page) => {
       );
     }
 
-    const totalCount = products.length;
+    const productsTotalCount = products.length;
     const startIndex = (page - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const paginatedProducts = products.slice(startIndex, endIndex);
 
-    const hasNextPage = endIndex < totalCount;
+    const hasNextPage = endIndex < productsTotalCount;
 
-    return { products: paginatedProducts, hasNextPage, totalCount };
+    return { products: paginatedProducts, hasNextPage, productsTotalCount };
   } catch (error) {
     console.error('Error fetching products: ', error);
     throw error;

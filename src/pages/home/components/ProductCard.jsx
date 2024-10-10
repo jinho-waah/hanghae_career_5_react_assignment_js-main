@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { formatPrice } from '@/utils/formatter';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 
 export const ProductCard = ({
   product,
@@ -15,14 +15,14 @@ export const ProductCard = ({
 
   const { title, image, price, category } = product;
 
-  const handleClickAddCartButton = (e) => {
+  const handleClickAddCartButton = useCallback((e) => {
     e.stopPropagation();
     onClickAddCartButton(e, product);
-  };
-  const handleClickPurchaseButton = (e) => {
+  });
+  const handleClickPurchaseButton = useCallback((e) => {
     e.stopPropagation();
     onClickPurchaseButton(e, product);
-  };
+  });
 
   return (
     <Card className="cursor-pointer">

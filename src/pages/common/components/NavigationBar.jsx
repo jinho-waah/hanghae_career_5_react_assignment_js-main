@@ -15,9 +15,13 @@ import useStore from '../../../store/useStore';
 export const NavigationBar = () => {
   const navigate = useNavigate();
   const { isOpen, openModal, closeModal } = useModal();
+  const { isLogin, user, cart, initCart, logout, initializeAuth } = useStore(); // Zustand에서 상태 및 액션 가져오기
 
-  const { isLogin, user, cart, initCart, logout } = useStore(); // Zustand에서 상태 및 액션 가져오기
-
+  // 페이지가 처음 로드될 때 쿠키에서 로그인 정보를 불러와 상태를 초기화
+  useEffect(() => {
+    initializeAuth(); // 로그인 상태 초기화
+  }, [initializeAuth]);
+  
   useEffect(() => {
     if (isLogin && user && cart.length === 0) {
       initCart(user.uid); // Redux 대신 zustand의 initCart 사용

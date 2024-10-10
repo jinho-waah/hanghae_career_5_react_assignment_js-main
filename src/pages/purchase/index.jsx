@@ -24,6 +24,7 @@ export const Purchase = () => {
     purchaseSuccess,
     purchaseFailure,
     resetCart,
+    showToast,
   } = useStore(); // zustand에서 상태 및 액션 가져오기
   const navigate = useNavigate();
 
@@ -80,6 +81,7 @@ export const Purchase = () => {
       purchaseSuccess();
       resetCart(user.uid);
       console.log('구매 성공!');
+      showToast('구매 완료 되었습니다!');
       navigate(pageRoutes.main);
     } catch (err) {
       if (err instanceof Error) {

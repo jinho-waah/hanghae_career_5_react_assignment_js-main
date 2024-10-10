@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { registerUserAPI } from '@/api/auth';
 import { ALL_CATEGORY_ID } from '@/constants';
 import { fetchProducts, addProductAPI } from '@/api/product';
+import Cookies from 'js-cookie';
 
 // Helper functions
 const getCartFromLocalStorage = (userId) => {
@@ -41,22 +42,45 @@ const setCartToLocalStorage = (cart, userId) => {
 const calculateTotal = (cart) =>
   cart.reduce(
     (acc, item) => ({
-      totalCount: acc.totalCount + item.count,
+      cartTotalCount: acc.cartTotalCount + item.count,
       totalPrice: acc.totalPrice + item.price * item.count,
     }),
-    { totalCount: 0, totalPrice: 0 }
+    { cartTotalCount: 0, totalPrice: 0 }
   );
 
+// store
 const useStore = create((set) => ({
-  // Auth state
   isLogin: false,
   user: null,
   registerStatus: 'idle',
   registerError: null,
 
-  setIsLogin: (isLogin) => set({ isLogin }),
-  setUser: (user) => set({ user, isLogin: true }),
-  logout: () => set({ isLogin: false, user: null }),
+  initializeAuth: () => {
+    const token = Cookies.get('accessToken');
+    const user = Cookies.get('user');
+    if (token && user) {
+      set({ isLogin: true, user: JSON.parse(user) });
+    }
+  },
+
+  setIsLogin: (isLogin) => {
+    set({ isLogin });
+    if (!isLogin) {
+      Cookies.remove('accessToken'); // 로그아웃 시 쿠키 삭제
+      Cookies.remove('user');
+    }
+  },
+
+  setUser: (user) => {
+    set({ user, isLogin: true });
+    Cookies.set('user', JSON.stringify(user), { expires: 7 }); // 쿠키에 사용자 정보 저장
+  },
+
+  logout: () => {
+    set({ isLogin: false, user: null });
+    Cookies.remove('accessToken'); // 쿠키에서 로그인 정보 삭제
+    Cookies.remove('user');
+  },
 
   registerUser: async ({ email, password, name }) => {
     set({ registerStatus: 'loading' });
@@ -78,7 +102,7 @@ const useStore = create((set) => ({
 
   // Cart state
   cart: [],
-  totalCount: 0,
+  cartTotalCount: 0,
   totalPrice: 0,
 
   initCart: (userId) => {
@@ -87,13 +111,13 @@ const useStore = create((set) => ({
     const total = calculateTotal(prevCartItems);
     set({
       cart: prevCartItems,
-      totalCount: total.totalCount,
+      cartTotalCount: total.cartTotalCount,
       totalPrice: total.totalPrice,
     });
   },
   resetCart: (userId) => {
     resetCartAtLocalStorage(userId);
-    set({ cart: [], totalCount: 0, totalPrice: 0 });
+    set({ cart: [], cartTotalCount: 0, totalPrice: 0 });
   },
   addCartItem: ({ item, userId, count }) =>
     set((state) => {
@@ -111,7 +135,7 @@ const useStore = create((set) => ({
       setCartToLocalStorage(updatedCart, userId);
       return {
         cart: updatedCart,
-        totalCount: total.totalCount,
+        cartTotalCount: total.cartTotalCount,
         totalPrice: total.totalPrice,
       };
     }),
@@ -122,7 +146,7 @@ const useStore = create((set) => ({
       setCartToLocalStorage(updatedCart, userId);
       return {
         cart: updatedCart,
-        totalCount: total.totalCount,
+        cartTotalCount: total.cartTotalCount,
         totalPrice: total.totalPrice,
       };
     }),
@@ -136,7 +160,7 @@ const useStore = create((set) => ({
         setCartToLocalStorage(updatedCart, userId);
         return {
           cart: updatedCart,
-          totalCount: total.totalCount,
+          cartTotalCount: total.cartTotalCount,
           totalPrice: total.totalPrice,
         };
       }
@@ -181,12 +205,12 @@ const useStore = create((set) => ({
   hasNextPage: true,
   isLoading: false,
   error: null,
-  totalCount: 0,
+  productsTotalCount: 0,
 
   loadProducts: async ({ filter, pageSize, page }) => {
     set({ isLoading: true });
     try {
-      const { products, hasNextPage, totalCount } = await fetchProducts(
+      const { products, hasNextPage, productsTotalCount } = await fetchProducts(
         filter,
         pageSize,
         page
@@ -194,7 +218,7 @@ const useStore = create((set) => ({
       set((state) => ({
         products: page === 1 ? products : [...state.products, ...products],
         hasNextPage,
-        totalCount,
+        productsTotalCount,
         isLoading: false,
         error: null,
       }));
@@ -209,7 +233,7 @@ const useStore = create((set) => ({
       const newProduct = await addProductAPI(productData);
       set((state) => ({
         products: [newProduct, ...state.products],
-        totalCount: state.totalCount + 1,
+        productsTotalCount: state.productsTotalCount + 1,
         isLoading: false,
         error: null,
       }));
@@ -225,6 +249,29 @@ const useStore = create((set) => ({
   purchaseStart: () => set({ isLoading: true, error: null }),
   purchaseSuccess: () => set({ isLoading: false, error: null }),
   purchaseFailure: (error) => set({ isLoading: false, error }),
+
+  // Toast state
+  toasts: [],
+
+  showToast: (message) => {
+    const id = Date.now(); // 고유한 ID 생성
+    set((state) => ({
+      toasts: [...state.toasts, { id, message }],
+    }));
+
+    // 3초 후 자동 제거
+    setTimeout(() => {
+      set((state) => ({
+        toasts: state.toasts.filter((toast) => toast.id !== id),
+      }));
+    }, 3000);
+  },
+
+  removeToast: (id) => {
+    set((state) => ({
+      toasts: state.toasts.filter((toast) => toast.id !== id),
+    }));
+  },
 }));
 
 export default useStore;

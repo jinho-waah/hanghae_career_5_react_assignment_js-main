@@ -24,7 +24,7 @@ import { uploadImage } from '@/utils/imageUpload';
 import useStore from '@/store/useStore'; // zustand 스토어
 
 export const ProductRegistrationModal = ({ isOpen, onClose, onProductAdded }) => {
-  const { addProduct } = useStore(); // zustand의 addProduct 액션 사용
+  const { addProduct, showToast } = useStore(); // zustand의 addProduct 액션 사용
 
   // React Hook Form setup
   const {
@@ -49,6 +49,7 @@ export const ProductRegistrationModal = ({ isOpen, onClose, onProductAdded }) =>
 
       const newProduct = createNewProduct(data, imageUrl);
       await addProduct(newProduct); // zustand 액션 호출
+      showToast('성공적으로 상품이 등록 되었습니다');
       onClose();
       onProductAdded();
     } catch (error) {

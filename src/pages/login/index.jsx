@@ -15,7 +15,7 @@ import useStore from '@/store/useStore'; // zustand 스토어 사용
 
 export const LoginPage = () => {
   const navigate = useNavigate();
-  const { setIsLogin, setUser } = useStore(); // zustand 액션 가져오기
+  const { setIsLogin, setUser, showToast } = useStore(); // zustand 액션 가져오기
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -60,7 +60,7 @@ export const LoginPage = () => {
           email: user.email ?? '',
           displayName: user.displayName ?? '',
         });
-
+        showToast('로그인에 성공했습니다!');
         navigate(pageRoutes.main);
       } catch (error) {
         console.error(

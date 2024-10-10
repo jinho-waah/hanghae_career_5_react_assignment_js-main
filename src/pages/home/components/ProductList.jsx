@@ -14,6 +14,7 @@ import { EmptyProduct } from './EmptyProduct';
 import { ProductCard } from './ProductCard';
 import { ProductRegistrationModal } from './ProductRegistrationModal';
 import useStore from '../../../store/useStore';
+import { useCallback } from 'react';
 
 export const ProductList = ({ pageSize = PRODUCT_PAGE_SIZE }) => {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ export const ProductList = ({ pageSize = PRODUCT_PAGE_SIZE }) => {
     filterState: filter,
     user,
     isLogin,
-    totalCount,
+    productsTotalCount,
     loadProducts,
     addCartItem,
   } = useStore();
@@ -64,7 +65,7 @@ export const ProductList = ({ pageSize = PRODUCT_PAGE_SIZE }) => {
     loadProductsData(true);
   }, [filter]);
 
-  const handleCartAction = (product) => {
+  const handleCartAction = useCallback((product) => {
     if (isLogin && user) {
       const cartItem = { ...product, count: 1 };
       addCartItem({ item: cartItem, userId: user.uid, count: 1 });
@@ -72,7 +73,7 @@ export const ProductList = ({ pageSize = PRODUCT_PAGE_SIZE }) => {
     } else {
       navigate(pageRoutes.login);
     }
-  };
+  });
 
   const handlePurchaseAction = (product) => {
     if (isLogin && user) {
@@ -97,7 +98,11 @@ export const ProductList = ({ pageSize = PRODUCT_PAGE_SIZE }) => {
       img.src = firstProductImage;
     }
   }, [firstProductImage]);
-
+  console.log(hasNextPage && currentPage * pageSize < productsTotalCount);
+  console.log('hasNexPage', hasNextPage);
+  console.log('currentPage', currentPage);
+  console.log('pageSize', pageSize);
+  console.log('totalCount', productsTotalCount);
   return (
     <>
       <div className="space-y-4">
@@ -135,7 +140,7 @@ export const ProductList = ({ pageSize = PRODUCT_PAGE_SIZE }) => {
                 />
               ))}
             </div>
-            {hasNextPage && currentPage * pageSize < totalCount && (
+            {hasNextPage && currentPage * pageSize < productsTotalCount && (
               <div className="flex justify-center mt-4">
                 <Button onClick={() => loadProductsData()} disabled={isLoading}>
                   {isLoading ? '로딩 중...' : '더 보기'}

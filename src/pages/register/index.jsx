@@ -13,7 +13,7 @@ import useStore from '../../store/useStore';
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
-  const { registerUser, registerStatus, registerError } = useStore();
+  const { registerUser, registerStatus, registerError, showToast } = useStore();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -22,9 +22,10 @@ export const RegisterPage = () => {
 
   useEffect(() => {
     if (registerStatus === 'succeeded') {
+      showToast('회원가입에 성공했습니다!');
       navigate(pageRoutes.login);
     }
-  }, [registerStatus, navigate]);
+  }, [registerStatus, navigate, showToast]);
 
   const validateForm = () => {
     let formErrors = {};
@@ -44,7 +45,7 @@ export const RegisterPage = () => {
     if (validateForm()) {
       try {
         await registerUser({ email, password, name });
-        console.log('가입 성공!');
+        console.log('가입 시도중!');
         navigate(pageRoutes.login);
       } catch (error) {
         console.error(
