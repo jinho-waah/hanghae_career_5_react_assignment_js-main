@@ -13,10 +13,10 @@ import { ProductCardSkeleton } from '../skeletons/ProductCardSkeleton';
 import { EmptyProduct } from './EmptyProduct';
 import { ProductCard } from './ProductCard';
 import { ProductRegistrationModal } from './ProductRegistrationModal';
-import useProductStore from '../../../store/useProductStore'; // 상품 관련 store
-import useFilterStore from '../../../store/useFilterStore'; // 필터 관련 store
-import useCartStore from '../../../store/useCartStore'; // 장바구니 관련 store
-import useAuthStore from '../../../store/useAuthStore'; // 로그인 상태 관련 store
+import { useLoadProducts } from '@/store/hooks/useLoadProducts'; // Product 관련 react-query hook
+import useFilterStore from '@/store/useFilterStore'; // 필터 관련 store
+import useCartStore from '@/store/useCartStore'; // 장바구니 관련 store
+import useAuthStore from '@/store/useAuthStore'; // 로그인 상태 관련 store
 
 export const ProductList = ({ pageSize = PRODUCT_PAGE_SIZE }) => {
   const navigate = useNavigate();
@@ -25,24 +25,27 @@ export const ProductList = ({ pageSize = PRODUCT_PAGE_SIZE }) => {
   const [isIndexErrorModalOpen, setIsIndexErrorModalOpen] = useState(false);
   const [indexLink, setIndexLink] = useState(null);
 
-  // 분리된 store 사용
-  const { products, hasNextPage, isLoading, productsTotalCount, loadProducts } =
-    useProductStore(); // 상품 관련
   const { filterState: filter } = useFilterStore(); // 필터 관련
   const { addCartItem } = useCartStore(); // 장바구니 관련
   const { user, isLogin } = useAuthStore(); // 로그인 상태 관련
 
+  // react-query로 products 데이터 요청
+  const {
+    data: productsData,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+  } = useLoadProducts(filter, pageSize, currentPage); // react-query 훅 사용
+
+  const products = productsData?.pages.flatMap((page) => page.products) || [];
+  const productsTotalCount = productsData?.pages[0]?.productsTotalCount || 0;
+
   const loadProductsData = async (isInitial = false) => {
     try {
-      const page = isInitial ? 1 : currentPage + 1;
-      await loadProducts({
-        filter,
-        pageSize,
-        page,
-        isInitial,
-      });
-      if (!isInitial) {
-        setCurrentPage(page);
+      if (isInitial) {
+        setCurrentPage(1);
+      } else {
+        await fetchNextPage();
       }
     } catch (error) {
       const errorMessage =
@@ -58,9 +61,8 @@ export const ProductList = ({ pageSize = PRODUCT_PAGE_SIZE }) => {
   };
 
   useEffect(() => {
-    setCurrentPage(1);
-    loadProductsData(true);
-  }, [filter, loadProducts]);
+    loadProductsData(true); // 필터가 변경되면 초기화 후 다시 불러오기
+  }, [filter]);
 
   const handleCartAction = useCallback(
     (product) => {
@@ -86,7 +88,6 @@ export const ProductList = ({ pageSize = PRODUCT_PAGE_SIZE }) => {
   };
 
   const handleProductAdded = () => {
-    setCurrentPage(1);
     loadProductsData(true);
   };
 

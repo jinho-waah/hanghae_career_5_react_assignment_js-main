@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { registerUserAPI } from '@/api/auth';
 import Cookies from 'js-cookie';
 
 const useAuthStore = create((set) => ({
@@ -35,23 +34,23 @@ const useAuthStore = create((set) => ({
     Cookies.remove('user');
   },
 
-  registerUser: async ({ email, password, name }) => {
-    set({ registerStatus: 'loading' });
-    try {
-      const user = await registerUserAPI({ email, password, name });
-      set({
-        registerStatus: 'succeeded',
-        user,
-        isLogin: true,
-        registerError: null,
-      });
-    } catch (error) {
-      set({
-        registerStatus: 'failed',
-        registerError: error.message || 'Registration failed',
-      });
-    }
-  },
+  // registerUser: async ({ email, password, name }) => {
+  //   set({ registerStatus: 'loading' });
+  //   try {
+  //     const user = await registerUserAPI({ email, password, name });
+  //     set({
+  //       registerStatus: 'succeeded',
+  //       user,
+  //       isLogin: true,
+  //       registerError: null,
+  //     });
+  //   } catch (error) {
+  //     set({
+  //       registerStatus: 'failed',
+  //       registerError: error.message || 'Registration failed',
+  //     });
+  //   }
+  // },
 }));
 
 export default useAuthStore;
