@@ -10,21 +10,24 @@ import { CartButton } from './CartButton';
 import { ConfirmModal } from './ConfirmModal';
 import { LoginButton } from './LoginButton';
 import { LogoutButton } from './LogoutButton';
-import useStore from '../../../store/useStore';
+import useAuthStore from '../../../store/useAuthStore'; // Auth 관련 zustand store
+import useCartStore from '../../../store/useCartStore'; // Cart 관련 zustand store
 
 export const NavigationBar = () => {
   const navigate = useNavigate();
   const { isOpen, openModal, closeModal } = useModal();
-  const { isLogin, user, cart, initCart, logout, initializeAuth } = useStore(); // Zustand에서 상태 및 액션 가져오기
+  const { isLogin, user, logout, initializeAuth } = useAuthStore(); // Auth 관련 상태 및 액션
+  const { cart, initCart } = useCartStore(); // Cart 관련 상태 및 액션
 
   // 페이지가 처음 로드될 때 쿠키에서 로그인 정보를 불러와 상태를 초기화
   useEffect(() => {
     initializeAuth(); // 로그인 상태 초기화
-  }, [initializeAuth]);
-  
+  }, []);
+
+  // 로그인 상태와 유저 정보가 있을 때 장바구니를 초기화
   useEffect(() => {
     if (isLogin && user && cart.length === 0) {
-      initCart(user.uid); // Redux 대신 zustand의 initCart 사용
+      initCart(user.uid); // CartStore의 initCart 사용
     }
   }, [isLogin, user, cart.length, initCart]);
 
@@ -33,8 +36,9 @@ export const NavigationBar = () => {
   };
 
   const handleConfirmLogout = () => {
-    logout(); // Redux 대신 zustand의 logout 사용
+    logout(); // AuthStore의 logout 사용
     Cookies.remove('accessToken');
+    Cookies.remove('user');
     closeModal();
   };
 

@@ -8,11 +8,12 @@ import {
 import { ProductInfoTableRow } from '@/pages/cart/components/ProductInfoTableRow';
 
 import React from 'react';
-import useStore from '../../../store/useStore';
+import useCartStore from '../../../store/useCartStore';
+import useAuthStore from '../../../store/useAuthStore';
 
 export const ProductInfoTable = () => {
-  const { cart, user } = useStore();
-
+  const { user } = useAuthStore();
+  const { cart } = useCartStore();
   return (
     <Table>
       <TableHeader>

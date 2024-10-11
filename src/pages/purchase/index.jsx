@@ -13,19 +13,19 @@ import { Layout, authStatusType } from '@/pages/common/components/Layout';
 import { ItemList } from '@/pages/purchase/components/ItemList';
 import { Payment } from '@/pages/purchase/components/Payment';
 import { ShippingInformationForm } from '@/pages/purchase/components/ShippingInformationForm';
-import useStore from '@/store/useStore'; // zustand 스토어 사용
+
+import useAuthStore from '@/store/useAuthStore'; // zustand의 auth store 사용
+import useCartStore from '@/store/useCartStore'; // zustand의 cart store 사용
+import usePurchaseStore from '@/store/usePurchaseStore'; // zustand의 purchase store 사용
+import useToastStore from '@/store/useToastStore'; // zustand의 toast store 사용
 
 export const Purchase = () => {
-  const {
-    user,
-    cart,
-    isLoading,
-    purchaseStart,
-    purchaseSuccess,
-    purchaseFailure,
-    resetCart,
-    showToast,
-  } = useStore(); // zustand에서 상태 및 액션 가져오기
+  const { user } = useAuthStore(); // 사용자 정보 가져오기
+  const { cart, resetCart } = useCartStore(); // 장바구니 상태 및 리셋 액션 가져오기
+  const { isLoading, purchaseStart, purchaseSuccess, purchaseFailure } =
+    usePurchaseStore(); // 구매 상태 및 액션 가져오기
+  const { showToast } = useToastStore(); // Toast 액션 가져오기
+
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -80,8 +80,8 @@ export const Purchase = () => {
       await makePurchase(purchaseData, user.uid, cart);
       purchaseSuccess();
       resetCart(user.uid);
-      console.log('구매 성공!');
       showToast('구매 완료 되었습니다!');
+      console.log('구매');
       navigate(pageRoutes.main);
     } catch (err) {
       if (err instanceof Error) {

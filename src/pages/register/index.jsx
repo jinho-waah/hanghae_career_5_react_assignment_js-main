@@ -9,11 +9,13 @@ import { pageRoutes } from '@/apiRoutes';
 import { EMAIL_PATTERN } from '@/constants';
 import { Layout, authStatusType } from '@/pages/common/components/Layout';
 
-import useStore from '../../store/useStore';
+import useAuthStore from '../../store/useAuthStore'; // Auth 관련 zustand 스토어
+import useToastStore from '../../store/useToastStore'; // Toast 관련 zustand 스토어
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
-  const { registerUser, registerStatus, registerError, showToast } = useStore();
+  const { registerUser, registerStatus, registerError } = useAuthStore(); // Auth 관련 상태 및 액션
+  const { showToast } = useToastStore(); // Toast 상태 및 액션
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -46,7 +48,6 @@ export const RegisterPage = () => {
       try {
         await registerUser({ email, password, name });
         console.log('가입 시도중!');
-        navigate(pageRoutes.login);
       } catch (error) {
         console.error(
           '회원가입 중 오류가 발생했습니다. 다시 시도해 주세요.',

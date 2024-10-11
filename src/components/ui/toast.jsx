@@ -1,8 +1,8 @@
 import React from 'react';
-import useStore from '@/store/useStore';
+import useToastStore from '../../store/useToastStore';
 
 const Toast = () => {
-  const { toasts, removeToast } = useStore();
+  const { toasts, removeToast } = useToastStore();
 
   return (
     <div className="fixed top-4 right-4 space-y-2 z-50">

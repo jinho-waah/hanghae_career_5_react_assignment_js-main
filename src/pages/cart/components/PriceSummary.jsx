@@ -3,12 +3,11 @@ import { Button } from '@/components/ui/button';
 import { formatNumber, formatPrice } from '@/utils/formatter';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import useStore from '../../../store/useStore';
+import useCartStore from '../../../store/useCartStore';
 
 export const PriceSummary = () => {
   const navigate = useNavigate();
-  const { cartTotalCount, totalPrice } = useStore();
-
+  const { cart, cartTotalCount, totalPrice } = useCartStore();
   const handleClickPurchase = () => {
     navigate(pageRoutes.purchase);
   };

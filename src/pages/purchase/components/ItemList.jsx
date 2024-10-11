@@ -9,11 +9,11 @@ import {
 } from '@/components/ui/table';
 import { ShoppingCart } from 'lucide-react';
 import React from 'react';
-import useStore from '@/store/useStore'; // zustand 스토어 가져오기
+import useCartStore from '@/store/useCartStore'; // zustand 스토어 가져오기
 import { formatPrice } from '@/utils/formatter';
 
 export const ItemList = () => {
-  const cart = useStore((state) => state.cart); // zustand의 상태 가져오기
+  const cart = useCartStore((state) => state.cart); // zustand의 cart 상태 가져오기
 
   return (
     <Card className="mt-6">

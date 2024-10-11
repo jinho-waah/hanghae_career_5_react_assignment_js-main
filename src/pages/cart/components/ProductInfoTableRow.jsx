@@ -3,14 +3,13 @@ import { Input } from '@/components/ui/input';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { MAX_CART_VALUE } from '@/constants';
 import { cartValidationMessages } from '@/messages';
-
 import { formatPrice } from '@/utils/formatter';
 import { Trash2 } from 'lucide-react';
 import React from 'react';
-import useStore from '../../../store/useStore';
+import useCartStore from '../../../store/useCartStore'; // cartStore로 수정
 
 export const ProductInfoTableRow = ({ item, user }) => {
-  const { changeCartItemCount, removeCartItem } = useStore();
+  const { changeCartItemCount, removeCartItem } = useCartStore(); // useCartStore로 수정
   const { id, title, count, image, price } = item;
 
   const handleClickDeleteItem = () => {

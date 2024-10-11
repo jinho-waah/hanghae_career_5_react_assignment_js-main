@@ -9,7 +9,7 @@ import React from 'react';
 import { CategoryRadioGroup } from './CategoryRadioGroup';
 import { PriceRange } from './PriceRange';
 import { SearchBar } from './SearchBar';
-import useStore from '../../../store/useStore';
+import useFilterStore from '../../../store/useFilterStore'; // useFilterStore로 변경
 
 const ProductFilterBox = ({ children }) => (
   <Card className="my-4">
@@ -19,23 +19,20 @@ const ProductFilterBox = ({ children }) => (
 
 export const ProductFilter = () => {
   const { filterState, setCategoryId, setMaxPrice, setMinPrice, setTitle } =
-    useStore();
+    useFilterStore(); // useStore 대신 useFilterStore 사용
 
   const handleChangeInput = debounce((e) => {
-    // dispatch(setTitle(e.target.value));
-    setTitle(e.target.value);
+    setTitle(e.target.value); // 필터 상태 업데이트
   }, 300);
 
   const handlePriceChange = (actionCreator) =>
     debounce((e) => {
       const value = e.target.value;
       if (value === '') {
-        // dispatch(actionCreator(-1));
         actionCreator(-1);
       } else {
         const numericValue = Math.max(0, parseInt(value, 10));
         if (!isNaN(numericValue)) {
-          // dispatch(actionCreator(numericValue));
           actionCreator(numericValue);
         }
       }
@@ -46,7 +43,6 @@ export const ProductFilter = () => {
 
   const handleChangeCategory = (value) => {
     if (value !== undefined) {
-      // dispatch(setCategoryId(value));
       setCategoryId(value);
     } else {
       console.error('카테고리가 설정되지 않았습니다.');

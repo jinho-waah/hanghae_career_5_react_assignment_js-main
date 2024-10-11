@@ -11,11 +11,13 @@ import { pageRoutes } from '@/apiRoutes';
 import { EMAIL_PATTERN } from '@/constants';
 import { auth } from '@/firebase';
 import { Layout, authStatusType } from '@/pages/common/components/Layout';
-import useStore from '@/store/useStore'; // zustand 스토어 사용
+import useAuthStore from '@/store/useAuthStore'; // zustand auth 스토어 사용
+import useToastStore from '@/store/useToastStore'; // zustand toast 스토어 사용
 
 export const LoginPage = () => {
   const navigate = useNavigate();
-  const { setIsLogin, setUser, showToast } = useStore(); // zustand 액션 가져오기
+  const { setIsLogin, setUser } = useAuthStore(); // zustand에서 auth 액션 가져오기
+  const { showToast } = useToastStore(); // zustand에서 토스트 액션 가져오기
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

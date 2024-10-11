@@ -21,10 +21,16 @@ import React from 'react';
 import { createNewProduct, initialProductState } from '@/helpers/product';
 import { useForm, Controller } from 'react-hook-form';
 import { uploadImage } from '@/utils/imageUpload';
-import useStore from '@/store/useStore'; // zustand 스토어
+import useProductStore from '@/store/useProductStore'; // 상품 관련 zustand 스토어
+import useToastStore from '@/store/useToastStore'; // 토스트 관련 zustand 스토어
 
-export const ProductRegistrationModal = ({ isOpen, onClose, onProductAdded }) => {
-  const { addProduct, showToast } = useStore(); // zustand의 addProduct 액션 사용
+export const ProductRegistrationModal = ({
+  isOpen,
+  onClose,
+  onProductAdded,
+}) => {
+  const { addProduct } = useProductStore(); // 상품 추가 액션
+  const { showToast } = useToastStore(); // 토스트 표시 액션
 
   // React Hook Form setup
   const {
@@ -54,6 +60,7 @@ export const ProductRegistrationModal = ({ isOpen, onClose, onProductAdded }) =>
       onProductAdded();
     } catch (error) {
       console.error('물품 등록에 실패했습니다.', error);
+      showToast('상품 등록에 실패했습니다');
     }
   };
 

@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { ChevronDown, Plus } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { pageRoutes } from '@/apiRoutes';
@@ -13,8 +13,10 @@ import { ProductCardSkeleton } from '../skeletons/ProductCardSkeleton';
 import { EmptyProduct } from './EmptyProduct';
 import { ProductCard } from './ProductCard';
 import { ProductRegistrationModal } from './ProductRegistrationModal';
-import useStore from '../../../store/useStore';
-import { useCallback } from 'react';
+import useProductStore from '../../../store/useProductStore'; // 상품 관련 store
+import useFilterStore from '../../../store/useFilterStore'; // 필터 관련 store
+import useCartStore from '../../../store/useCartStore'; // 장바구니 관련 store
+import useAuthStore from '../../../store/useAuthStore'; // 로그인 상태 관련 store
 
 export const ProductList = ({ pageSize = PRODUCT_PAGE_SIZE }) => {
   const navigate = useNavigate();
@@ -23,17 +25,12 @@ export const ProductList = ({ pageSize = PRODUCT_PAGE_SIZE }) => {
   const [isIndexErrorModalOpen, setIsIndexErrorModalOpen] = useState(false);
   const [indexLink, setIndexLink] = useState(null);
 
-  const {
-    products,
-    hasNextPage,
-    isLoading,
-    filterState: filter,
-    user,
-    isLogin,
-    productsTotalCount,
-    loadProducts,
-    addCartItem,
-  } = useStore();
+  // 분리된 store 사용
+  const { products, hasNextPage, isLoading, productsTotalCount, loadProducts } =
+    useProductStore(); // 상품 관련
+  const { filterState: filter } = useFilterStore(); // 필터 관련
+  const { addCartItem } = useCartStore(); // 장바구니 관련
+  const { user, isLogin } = useAuthStore(); // 로그인 상태 관련
 
   const loadProductsData = async (isInitial = false) => {
     try {
@@ -63,17 +60,20 @@ export const ProductList = ({ pageSize = PRODUCT_PAGE_SIZE }) => {
   useEffect(() => {
     setCurrentPage(1);
     loadProductsData(true);
-  }, [filter]);
+  }, [filter, loadProducts]);
 
-  const handleCartAction = useCallback((product) => {
-    if (isLogin && user) {
-      const cartItem = { ...product, count: 1 };
-      addCartItem({ item: cartItem, userId: user.uid, count: 1 });
-      console.log(`${product.title} 상품이 \n장바구니에 담겼습니다.`);
-    } else {
-      navigate(pageRoutes.login);
-    }
-  });
+  const handleCartAction = useCallback(
+    (product) => {
+      if (isLogin && user) {
+        const cartItem = { ...product, count: 1 };
+        addCartItem({ item: cartItem, userId: user.uid, count: 1 });
+        console.log(`${product.title} 상품이 \n장바구니에 담겼습니다.`);
+      } else {
+        navigate(pageRoutes.login);
+      }
+    },
+    [addCartItem, isLogin, user, navigate]
+  );
 
   const handlePurchaseAction = (product) => {
     if (isLogin && user) {
@@ -98,11 +98,7 @@ export const ProductList = ({ pageSize = PRODUCT_PAGE_SIZE }) => {
       img.src = firstProductImage;
     }
   }, [firstProductImage]);
-  console.log(hasNextPage && currentPage * pageSize < productsTotalCount);
-  console.log('hasNexPage', hasNextPage);
-  console.log('currentPage', currentPage);
-  console.log('pageSize', pageSize);
-  console.log('totalCount', productsTotalCount);
+
   return (
     <>
       <div className="space-y-4">
