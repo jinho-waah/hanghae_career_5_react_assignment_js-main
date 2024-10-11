@@ -3,7 +3,7 @@ import { fetchProducts } from '@/api/product';
 
 export const useLoadProducts = (filter, pageSize, page) => {
   return useInfiniteQuery({
-    queryKey: ['products', filter, pageSize], // queryKey도 이제 배열이 아닌 객체로 전달합니다
+    queryKey: ['products', filter, pageSize],
     queryFn: async ({ pageParam = page }) => {
       return await fetchProducts(filter, pageSize, pageParam);
     },
